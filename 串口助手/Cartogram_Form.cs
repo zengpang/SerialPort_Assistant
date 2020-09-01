@@ -15,11 +15,12 @@ namespace 串口助手
 {
     public partial class Cartogram_Form : Form
     {
+        private byte[] ProtocolRead = new byte[4000];
         private ProtocolList protocolList;
         private byte[] SendBuffer;
         private Protocols_GURD_XML protocols_GURD_XML=new Protocols_GURD_XML();
         private string Protocol_Path = "Protocol.xml";
-
+        private Random rnd = new Random();
         private StereoscopicCartogramPaint stereoscopicCartogramPaint=new StereoscopicCartogramPaint();
         private double[,] PaintData = new double[21, 90];
         private int[,] PhasePosition = new int[21, 9];
@@ -36,13 +37,17 @@ namespace 串口助手
 
         private void SendProtocol_Btn_Click(object sender, EventArgs e)
         {
-            
-            if(!Cartogram_SerialPort.IsOpen)
+            Cartogram_Paint3D_Timer.Enabled = true;
+            if (!Cartogram_SerialPort.IsOpen)
             {
                 Cartogram_SerialPort.Open();
 
             }
             SendProtocol_Timer.Start();
+
+
+
+
 
 
         }
@@ -67,28 +72,31 @@ namespace 串口助手
 
             }
             stereoscopicCartogramPaint.StereoscopicCartogramInitialized(ref c1Chart3D1,ref PaintData);
-
+            SerialPortHelper_HomeForm.serialPortData += SerialPortChange;
 
 
         }
 
         private void Cartogram_SerialPort_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
-            byte[] ProtocolRead = new byte[Cartogram_SerialPort.BytesToRead];
-            Cartogram_SerialPort.Read(ProtocolRead,0, ProtocolRead.Length);
+           
+            Cartogram_SerialPort.Read(ProtocolRead,0, Cartogram_SerialPort.BytesToRead);
 
+            for (int j = 0; j < 9; j++)
+            {
+
+               
+                rphase[j] = j * 10 + rnd.Next(10);//输入数据的相位信息   
+                rdata[j] = ProtocolRead[13 + j] * 5 + rnd.Next(5); //输入数据的幅值
+            }
 
         }
 
         private void SendProtocol_Timer_Tick(object sender, EventArgs e)
         {
-            string[] SendProtocolContents=Protocol_Content_TextBox.Text.Split(' ');
-            for(int i=0;i<SendProtocolContents.Length;i++)
-            {
-                SendBuffer[i] = Convert.ToByte(SendProtocolContents[i], 16);
-
-            }
-            Cartogram_SerialPort.Write(SendBuffer, 0, SendBuffer.Length);
+            SendProtocol_Timer.Stop();
+            SendProtocol();
+            SendProtocol_Timer.Start();
 
         }
 
@@ -96,7 +104,7 @@ namespace 串口助手
         {
             for(int i=0;i< protocolList.Protocols.Count;i++)
             {
-                if(protocolList.Protocols[i].Protocol_TitleName==Protocol_Name_ComBox.Items[i])
+                if(protocolList.Protocols[i].Protocol_TitleName==Protocol_Name_ComBox.Text)
                 {
                     Protocol_Content_TextBox.Text = protocolList.Protocols[i].Protocol_Content;
                 }
@@ -116,9 +124,21 @@ namespace 串口助手
         private void Paint_Timer_Tick(object sender, EventArgs e)
         {
             Paint_Timer.Stop();
+            Paint_Timer.Start();
+
 
         }
+        private void SendProtocol()
+        {
+            string[] SendProtocolContents = Protocol_Content_TextBox.Text.Split(' ');
+            SendBuffer = new byte[SendProtocolContents.Length];
+            for (int i = 0; i < SendProtocolContents.Length; i++)
+            {
+                SendBuffer[i] = Convert.ToByte(SendProtocolContents[i], 16);
 
+            }
+            Cartogram_SerialPort.Write(SendBuffer, 0, SendBuffer.Length);
+        }
         private void Cartogram_Paint3D_Timer_Tick(object sender, EventArgs e)
         {
             Cartogram_Paint3D_Timer.Stop();
@@ -126,6 +146,12 @@ namespace 串口助手
 
             Cartogram_Paint3D_Timer.Start();
         }
-       
+        public void SerialPortChange(string PortName,int BaudRate)
+        {
+            Cartogram_SerialPort.PortName = PortName;
+            Cartogram_SerialPort.BaudRate = BaudRate;
+        }
+
+
     }
 }

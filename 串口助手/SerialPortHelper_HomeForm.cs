@@ -25,7 +25,7 @@ namespace 串口助手
         private String Protocol_Context = "";
         private Protocols_GURD_XML protocols_GURD_XML = new Protocols_GURD_XML();
         private Cartogram_Form form2;
-        public  delegate void SerialPortData();
+        public  delegate void SerialPortData(string PortName,int BaudRate);
         public static event SerialPortData serialPortData;
 
         public SerialPortHelper_HomeForm()
@@ -62,9 +62,8 @@ namespace 串口助手
         {
             Btn_Open_SerialPort.BackColor = Color.Red;
 
-        
-            serialPort.PortName = Com_ComBox.Text.Trim();
-            serialPort.BaudRate = int.Parse((Port_Combox.Text.Trim()));
+
+            SerialPort_Synchronization();
             serialPort.Open();
 
         }
@@ -126,16 +125,27 @@ namespace 串口助手
             tab2.Controls.Add(form2);
             tabControl1.TabPages.Add(tab2);
             form2.Show();
-         
+            SerialPort_Synchronization();
+
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            serialPortData();
+            serialPortData(serialPort.PortName,serialPort.BaudRate);
 
             serialPort.Close();
             
 
+        }
+
+        private void Com_ComBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SerialPort_Synchronization();
+        }
+        private void SerialPort_Synchronization()
+        {
+            serialPort.PortName = Com_ComBox.Text.Trim();
+            serialPort.BaudRate = int.Parse((Port_Combox.Text.Trim()));
         }
     }
 }

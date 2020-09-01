@@ -49,10 +49,10 @@
             this.c1Chart3D1.BackColor = System.Drawing.Color.CornflowerBlue;
             this.c1Chart3D1.Font = new System.Drawing.Font("楷体", 21.75F, System.Drawing.FontStyle.Bold);
             this.c1Chart3D1.ForeColor = System.Drawing.Color.Yellow;
-            this.c1Chart3D1.Location = new System.Drawing.Point(185, 12);
+            this.c1Chart3D1.Location = new System.Drawing.Point(152, 12);
             this.c1Chart3D1.Name = "c1Chart3D1";
             this.c1Chart3D1.PropBag = resources.GetString("c1Chart3D1.PropBag");
-            this.c1Chart3D1.Size = new System.Drawing.Size(389, 259);
+            this.c1Chart3D1.Size = new System.Drawing.Size(422, 259);
             this.c1Chart3D1.TabIndex = 4;
             // 
             // SendProtocol_Btn
@@ -107,6 +107,7 @@
             // 
             // Cartogram_Paint3D_Timer
             // 
+            this.Cartogram_Paint3D_Timer.Interval = 200;
             this.Cartogram_Paint3D_Timer.Tick += new System.EventHandler(this.Cartogram_Paint3D_Timer_Tick);
             // 
             // Cartogram_Form

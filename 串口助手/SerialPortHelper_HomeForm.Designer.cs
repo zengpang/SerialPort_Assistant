@@ -167,6 +167,7 @@
             this.Com_ComBox.Name = "Com_ComBox";
             this.Com_ComBox.Size = new System.Drawing.Size(107, 20);
             this.Com_ComBox.TabIndex = 1;
+            this.Com_ComBox.SelectedIndexChanged += new System.EventHandler(this.Com_ComBox_SelectedIndexChanged);
             // 
             // tabControl1
             // 
